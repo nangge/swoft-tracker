@@ -12,13 +12,13 @@ use Swoft\Rpc\Server\Contract\RequestInterface;
 use Swoft\Rpc\Server\Contract\ResponseInterface;
 
 /**
- * Class ServiceMiddleware
+ * Class TraceMiddleware
  *
  * @since 2.0
  *
  * @Bean()
  */
-class ServiceMiddleware implements MiddlewareInterface
+class TraceMiddleware implements MiddlewareInterface
 {
     /**
      * @param RequestInterface        $request

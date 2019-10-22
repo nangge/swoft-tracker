@@ -32,9 +32,9 @@ class TraceExtender implements ExtenderInterface
         $parentid = context()->get('parentid', '');
 
         return [
-            $traceid,
-            $spanid,
-            $parentid,
+            'traceid' => $traceid,
+            'spanid' => $spanid,
+            'parentid' => $parentid,
         ];
     }
 }
