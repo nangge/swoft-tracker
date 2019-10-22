@@ -1,0 +1,20 @@
+{
+    "name": "nango/swoft-tracker",
+    "description": "swoft 日志链路追踪库",
+    "type": "library",
+    "authors": [
+        {
+            "name": "nango",
+            "email": "553212320@qq.com"
+        }
+    ],
+    "keywords": ["swoft", "swoft trace", "traceid"],
+    "license": "MIT",
+
+    "autoload": {
+        "psr-4": {
+            "SwoftTracker\\": "src/"
+        }
+    },
+    "require": {}
+}
