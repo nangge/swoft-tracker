@@ -2,6 +2,7 @@
     "name": "nango/swoft-tracker",
     "description": "swoft 日志链路追踪库",
     "type": "library",
+    "version": "v0.0.1",
     "authors": [
         {
             "name": "nango",
