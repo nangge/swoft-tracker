@@ -2,7 +2,10 @@
 
 ###### 该库主要通过设置traceid，spanid，来实现日志链路记录，保证同一请求的链路traceid一致；
 ###### 并且增加`RedisHandler`可以将日志直接记录到redis中（协程方式）,后续可以通过ELK同步日志；另外通过日志配置增加version、interface、method、params、cost(时间消耗)的日志记录
+```
+{"messages":"trace[HttpTraceMiddleware.php:50] HTTP END","level_name":"info","datetime":"2019-10-23 09:44","traceid":"resource5dafb08c0d5be","spanid":"resource","version":"","interface":"\/rpc\/getList","method":"GET","params":{"a":"123"},"cost":"9.18ms"}
 
+```
 ---
 
 ## 要求
@@ -64,7 +67,7 @@ composer require nango/swoft-tracker
         'dateFormat' => 'Y-m-d H:i:s',
     ],
     'noticeHandler'      => [
-//        'class'     => RedisHandler::class,
+        'class'     => SwoftTracker\Middleware\RedisHandler::class,
         'formatter' => \bean('jsonFormatter'),
         'levels'    => 'info',
     ],

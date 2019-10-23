@@ -1,7 +1,7 @@
 <?php declare(strict_types=1);
 
 
-namespace SwoftTrace\Middleware;
+namespace SwoftTracker\Middleware;
 
 
 use Psr\Http\Message\ServerRequestInterface;

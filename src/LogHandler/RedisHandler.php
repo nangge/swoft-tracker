@@ -53,6 +53,25 @@ class RedisHandler extends AbstractProcessingHandler
     }
 
     /**
+     * Write log by batch
+     *
+     * @param array $records
+     *
+     * @return void
+     * @throws ReflectionException
+     * @throws ContainerException
+     */
+    public function handleBatch(array $records): void
+    {
+        $records = $this->recordFilter($records);
+        if (!$records) {
+            return;
+        }
+
+        $this->write($records);
+    }
+
+    /**
      * Write file
      *
      * @param array $records
@@ -77,5 +96,63 @@ class RedisHandler extends AbstractProcessingHandler
         sgo(function () use ($messageText) {
            Redis::rPush(config('app_name').':log-key', $messageText);
         });
+    }
+
+    /**
+     * Filter record
+     *
+     * @param array $records
+     *
+     * @return array
+     */
+    private function recordFilter(array $records): array
+    {
+        $messages = [];
+        foreach ($records as $record) {
+            if (!isset($record['level'])) {
+                continue;
+            }
+            if (!$this->isHandling($record)) {
+                continue;
+            }
+
+            $record              = $this->processRecord($record);
+            $record['formatted'] = $this->getFormatter()->format($record);
+
+            $messages[] = $record;
+        }
+        return $messages;
+    }
+
+    /**
+     * @param array $record
+     *
+     * @return string
+     */
+    public function formatJson(array $record): string
+    {
+        unset($record['formatted'], $record['context'], $record['extra']);
+
+        if ($record['datetime'] instanceof DateTime) {
+            $record['datetime'] = $record['datetime']->format('Y-m-d H:i');
+        }
+
+        return JsonHelper::encode($record, JSON_UNESCAPED_UNICODE);
+    }
+
+    /**
+     * Whether to handler log
+     *
+     * @param array $record
+     *
+     * @return bool
+     */
+    public function isHandling(array $record): bool
+    {
+        if (empty($this->levelValues)) {
+            return true;
+        }
+
+        return in_array($record['level'], $this->levelValues, true);
     }
 }
