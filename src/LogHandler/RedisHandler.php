@@ -6,6 +6,7 @@ namespace SwoftTracker\LogHandler;
 
 
 use Swoft\Redis\Redis;
+use Swoft\Stdlib\Helper\JsonHelper;
 use function array_column;
 use function implode;
 use InvalidArgumentException;
@@ -36,6 +37,12 @@ class RedisHandler extends AbstractProcessingHandler
     protected $levelValues = [];
 
     /**
+     * 连接池名称
+     * @var string
+     */
+    protected $redisPool = '';
+
+    /**
      * Will exec on construct
      */
     public function init(): void
@@ -49,6 +56,10 @@ class RedisHandler extends AbstractProcessingHandler
         if (is_string($this->levels)) {
             $levelNames        = explode(',', $this->levels);
             $this->levelValues = SwoftLogger::getLevelByNames($levelNames);
+        }
+
+        if (is_string($this->redisPool)) {
+            $this->redisPool = trim($this->redisPool);
         }
     }
 
@@ -94,7 +105,7 @@ class RedisHandler extends AbstractProcessingHandler
         }
 
         sgo(function () use ($messageText) {
-           Redis::rPush(config('app_name').':log-key', $messageText);
+            Redis::connection($this->redisPool)->rpush('log', $messageText);
         });
     }
 
