@@ -52,7 +52,7 @@ composer require nango/swoft-tracker
     'host'    => '192.168.152.55',
         ... ...
     'packet'  => bean('rpcClientPacket'),
-    'extender' => bean(SwoftTracker\Middleware\ExtenderNew::class)
+    'extender' => bean(SwoftTracker\Middleware\TraceExtender::class)
 ],
 ```
 以上配置就可以实现，多服务之间调用时的日志链路追踪。
