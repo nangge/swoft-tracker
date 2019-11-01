@@ -39,7 +39,7 @@ class HttpTraceMiddleware implements MiddlewareInterface
         context()->set('startTime', microtime(true));
         context()->set('interface', $request->getUri()->getPath());
         context()->set('method', $request->getMethod());
-        context()->set('params', $request->getQueryParams());
+        context()->set('params', context()->getRequest()->input());
         context()->set('appInfo', [
             'env'     => config('env'),
             'name'    => config('name'),
