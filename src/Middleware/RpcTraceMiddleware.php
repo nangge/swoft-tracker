@@ -40,7 +40,7 @@ class RpcTraceMiddleware implements MiddlewareInterface
         context()->set('version', $request->getVersion());
         context()->set('interface', $request->getInterface());
         context()->set('method', $request->getMethod());
-        context()->set('params', context()->getRequest()->input());
+        context()->set('params', $request->getParams());
         context()->set('appInfo', [
             'env'     => config('env'),
             'name'    => config('name'),
