@@ -35,22 +35,35 @@ class RpcTraceMiddleware implements MiddlewareInterface
         return $response;
     }
 
-    public function startRpc(RequestInterface $request) {
+    public function startRpc(RequestInterface $request)
+    {
         context()->set('startTime', microtime(true));
         context()->set('version', $request->getVersion());
         context()->set('interface', $request->getInterface());
         context()->set('method', $request->getMethod());
-        context()->set('params', $request->getParams());
+        $params = [
+            'query' => $request->getParams(),
+            'sql' => context()->get('sql', '')
+        ];
+        context()->set('params', $params);
         context()->set('appInfo', [
-            'env'     => config('env'),
-            'name'    => config('name'),
+            'env' => config('env'),
+            'name' => config('name'),
             'version' => config('version'),
         ]);
     }
 
-    public function endRpc() {
-        $cost         = sprintf('%.2f', (microtime(true)-context()->get('startTime')) * 1000);
+    public function endRpc()
+    {
+        //计算耗时时间
+        $cost = sprintf('%.2f', (microtime(true) - context()->get('startTime')) * 1000);
         context()->set('cost', $cost . 'ms');
-        Log::info('RPC END');
+
+        //获取执行sql
+        $params = context()->get('params');
+        $params['sql'] = context()->get('sql', '');
+        context()->set('params', $params);
+
+        Log::info(sprintf("【%s】服务，RPC 请求结束", config('name', 'swoft')));
     }
 }

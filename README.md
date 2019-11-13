@@ -3,7 +3,7 @@
 ###### 该库主要通过设置traceid，spanid，来实现日志链路记录，保证同一请求的链路traceid一致；
 ###### 并且增加`RedisHandler`可以将日志直接记录到redis中（协程方式）,后续可以通过ELK同步日志；另外通过日志配置增加version、interface、method、params、cost(时间消耗)的日志记录
 ```
-{"messages":"trace[HttpTraceMiddleware.php:50] HTTP END","level_name":"info","datetime":"2019-10-23 09:44","traceid":"resource5dafb08c0d5be","spanid":"resource","version":"","interface":"\/rpc\/getList","method":"GET","params":{"a":"123"},"cost":"9.18ms"}
+{"messages":"trace[HttpTraceMiddleware.php:53] HTTP END","level":200,"level_name":"info","channel":"swoft","event":"request","tid":14,"cid":14,"traceid":"5dcb6271b889c","spanid":"","version":"","interface":"\/user\/info","method":"GET","params":[],"appInfo":{"env":"local","name":null,"version":null},"cost":"231.90ms","datetime":"2019-11-13 09:54:57.855"}
 
 ```
 ---
@@ -58,43 +58,32 @@ composer require nango/swoft-tracker
 以上配置就可以实现，多服务之间调用时的日志链路追踪。
 
 ## logger配置
-使用`RedisHandler`,只需新增一个handler即可：
+使用`RedisHandler`,可以指定连接池，将业务redis库和日志库隔离开；简单配置如下：
 
 ```
-    'jsonFormatter'      => [
-        'class' => JsonFormatter::class,
-        'format'     => '%datetime% [%level_name%] [%channel%] [%event%] [tid:%tid%] [cid:%cid%] [traceid:%traceid%] [spanid:%spanid%] [parentid:%parentid%] %messages%',
-        'dateFormat' => 'Y-m-d H:i:s',
-    ],
-    'noticeHandler'      => [
+    'applicationHandler' => [
         'class'     => SwoftTracker\Middleware\RedisHandler::class,
-        'formatter' => \bean('jsonFormatter'),
-        'levels'    => 'info',
+        'redisPool' => 'redis.log-pool',
+        'levels'    => 'info,error,warning',
     ],
-```
 
-可以在logger配置中增加items选项来设置日志记录消耗时间，RPC请求方法等；
-
-
-```
-'logger'             => [
+    //可以在logger配置中增加items选项来设置日志记录消耗时间，RPC请求方法等；
+    'logger'             => [
         'flushRequest' => false,
         'enable'       => true,
-        'json' => true,
-        'handlers'     => [
-            'application' => \bean('applicationHandler'),
-            'notice'      => \bean('noticeHandler'),
-        ],
-        'items' => [
+        'json'         => true,
+        'items'        => [
             'traceid',
             'spanid',
             'version',
             'interface',
             'method',
             'params',
+            'appInfo',
             'cost'
         ],
     ],
+    
 ```
 
 ## 非swoft框架 RPC调用
@@ -110,6 +99,8 @@ $req = [
         'id' => '',
         'ext' => ['traceid' => $traceid],
     ];
+//发起调用
+... ...
 ```
 
 

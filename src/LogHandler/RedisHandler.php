@@ -144,8 +144,8 @@ class RedisHandler extends AbstractProcessingHandler
     {
         unset($record['formatted'], $record['context'], $record['extra']);
 
-        if ($record['datetime'] instanceof DateTime) {
-            $record['datetime'] = $record['datetime']->format('Y-m-d H:i');
+        if ($record['datetime'] instanceof \DateTime) {
+            $record['datetime'] = $record['datetime']->format('Y-m-d H:i:s.u');
         }
 
         return JsonHelper::encode($record, JSON_UNESCAPED_UNICODE);

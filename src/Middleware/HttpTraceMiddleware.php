@@ -39,7 +39,7 @@ class HttpTraceMiddleware implements MiddlewareInterface
         context()->set('startTime', microtime(true));
         context()->set('interface', $request->getUri()->getPath());
         context()->set('method', $request->getMethod());
-        context()->set('params', context()->getRequest()->input());
+
         context()->set('appInfo', [
             'env'     => config('env'),
             'name'    => config('name'),
@@ -48,8 +48,18 @@ class HttpTraceMiddleware implements MiddlewareInterface
     }
 
     public function endRequest() {
+        //计算整个请求耗时
         $cost         = sprintf('%.2f', (microtime(true)-context()->get('startTime')) * 1000);
         context()->set('cost', $cost . 'ms');
-        Log::info('HTTP END');
+
+        //记录请求参数
+        $params = [
+            'query' => context()->getRequest()->input(),
+            'header' => context()->getRequest()->getHeaders(),
+            'sql'  => context()->get('sql', '无')
+        ];
+        context()->set('params', $params);
+
+        Log::info('Http接口请求结束');
     }
 }
